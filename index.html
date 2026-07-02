@@ -37,7 +37,7 @@
       .certifications__container {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
+        gap: 1.75rem;
       }
       @media screen and (min-width: 768px) {
         .certifications__container {
@@ -58,9 +58,10 @@
       /* Card: colored header band + white body, emblem badge on the seam */
       .cert__card {
         position: relative;
-        border-radius: 1.1rem;
+        border-radius: 1.25rem;
         overflow: hidden;
         width: 100%;
+        min-height: 320px;
         display: flex;
         flex-direction: column;
         cursor: pointer;
@@ -76,7 +77,7 @@
       }
       .cert__header {
         position: relative;
-        height: 88px;
+        height: 130px;
         flex-shrink: 0;
         background: linear-gradient(
           135deg,
@@ -97,10 +98,10 @@
       .cert__badge-wrap {
         position: absolute;
         left: 50%;
-        top: 88px;
+        top: 130px;
         transform: translate(-50%, -50%);
-        width: 64px;
-        height: 64px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         background: #fff;
         display: flex;
@@ -122,7 +123,7 @@
         justify-content: center;
         width: 100%;
         height: 100%;
-        font-size: 1.55rem;
+        font-size: 1.4rem;
         color: var(--cert-accent, #4070f4);
       }
       .cert__body {
@@ -130,22 +131,22 @@
         display: flex;
         flex-direction: column;
         text-align: center;
-        padding: 2.15rem 1.1rem 1.25rem;
+        padding: 3rem 1.4rem 1.5rem;
       }
       .cert__issuer {
-        font-size: 0.68rem;
+        font-size: 0.72rem;
         letter-spacing: 0.07em;
         text-transform: uppercase;
         font-weight: 700;
         color: var(--cert-accent, #4070f4);
-        margin-bottom: 0.4rem;
+        margin-bottom: 0.55rem;
       }
       .cert__name {
-        font-size: 0.92rem;
+        font-size: 1rem;
         font-weight: 700;
-        line-height: 1.35;
+        line-height: 1.4;
         color: var(--title-color, #1f1f1f);
-        margin-bottom: 0.6rem;
+        margin-bottom: 0.75rem;
       }
       .cert__date {
         font-size: 0.74rem;
@@ -173,6 +174,25 @@
       }
       body.dark-theme .cert__badge-fallback {
         color: var(--cert-light, #a9b8ff);
+      }
+      @media screen and (max-width: 576px) {
+        .cert__card {
+          min-height: 280px;
+        }
+        .cert__header {
+          height: 110px;
+        }
+        .cert__badge-wrap {
+          top: 110px;
+          width: 42px;
+          height: 42px;
+        }
+        .cert__badge-fallback {
+          font-size: 1.2rem;
+        }
+        .cert__body {
+          padding: 2.6rem 1.1rem 1.25rem;
+        }
       }
 
       /* Modal */
@@ -834,7 +854,12 @@
           <!-- 1. PMP -->
           <div
             class="cert__card"
-            style="--cert-accent: #1a1a6e; --cert-accent-2: #3a5bdc; --cert-light: #dde4ff; --cert-light-2: #f2f4ff"
+            style="
+              --cert-accent: #1a1a6e;
+              --cert-accent-2: #3a5bdc;
+              --cert-light: #dde4ff;
+              --cert-light-2: #f2f4ff;
+            "
             onclick="openCert('pmp')"
           >
             <div class="cert__header">
@@ -842,7 +867,7 @@
                 class="cert__bg-img"
                 src="assets/img/certs/pmp.jpg"
                 alt="PMP certificate"
-                onerror="this.remove();"
+                onerror="this.remove()"
               />
             </div>
             <div class="cert__badge-wrap">
@@ -850,7 +875,10 @@
                 class="cert__badge-img"
                 src="assets/img/certs/badges/pmp.png"
                 alt="PMP badge"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                onerror="
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'flex';
+                "
               />
               <div class="cert__badge-fallback">
                 <i class="ri-award-line"></i>
@@ -868,7 +896,12 @@
           <!-- 2. CFA -->
           <div
             class="cert__card"
-            style="--cert-accent: #0a3d62; --cert-accent-2: #2e86c1; --cert-light: #d9edfb; --cert-light-2: #f0f8fd"
+            style="
+              --cert-accent: #0a3d62;
+              --cert-accent-2: #2e86c1;
+              --cert-light: #d9edfb;
+              --cert-light-2: #f0f8fd;
+            "
             onclick="openCert('cfa')"
           >
             <div class="cert__header">
@@ -876,7 +909,7 @@
                 class="cert__bg-img"
                 src="assets/img/certs/cfa.jpg"
                 alt="CFA certificate"
-                onerror="this.remove();"
+                onerror="this.remove()"
               />
             </div>
             <div class="cert__badge-wrap">
@@ -884,7 +917,10 @@
                 class="cert__badge-img"
                 src="assets/img/certs/badges/cfa.png"
                 alt="CFA Institute badge"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                onerror="
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'flex';
+                "
               />
               <div class="cert__badge-fallback">
                 <i class="ri-line-chart-line"></i>
@@ -900,7 +936,12 @@
           <!-- 3. PMI-CPMAI -->
           <div
             class="cert__card"
-            style="--cert-accent: #5b2c91; --cert-accent-2: #9b59b6; --cert-light: #ecdcf7; --cert-light-2: #f8f0fc"
+            style="
+              --cert-accent: #5b2c91;
+              --cert-accent-2: #9b59b6;
+              --cert-light: #ecdcf7;
+              --cert-light-2: #f8f0fc;
+            "
             onclick="openCert('cpmai')"
           >
             <div class="cert__header">
@@ -908,7 +949,7 @@
                 class="cert__bg-img"
                 src="assets/img/certs/cpmai.jpg"
                 alt="CPMAI certificate"
-                onerror="this.remove();"
+                onerror="this.remove()"
               />
             </div>
             <div class="cert__badge-wrap">
@@ -916,7 +957,10 @@
                 class="cert__badge-img"
                 src="assets/img/certs/badges/cpmai.png"
                 alt="PMI CPMAI badge"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                onerror="
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'flex';
+                "
               />
               <div class="cert__badge-fallback">
                 <i class="ri-cpu-line"></i>
@@ -934,7 +978,12 @@
           <!-- 4. Financial Modelling -->
           <div
             class="cert__card"
-            style="--cert-accent: #7d6608; --cert-accent-2: #d4ac0d; --cert-light: #faf0cf; --cert-light-2: #fffaf0"
+            style="
+              --cert-accent: #7d6608;
+              --cert-accent-2: #d4ac0d;
+              --cert-light: #faf0cf;
+              --cert-light-2: #fffaf0;
+            "
             onclick="openCert('fmv')"
           >
             <div class="cert__header">
@@ -942,7 +991,7 @@
                 class="cert__bg-img"
                 src="assets/img/certs/fmv.jpg"
                 alt="Financial Modelling certificate"
-                onerror="this.remove();"
+                onerror="this.remove()"
               />
             </div>
             <div class="cert__badge-wrap">
@@ -950,7 +999,10 @@
                 class="cert__badge-img"
                 src="assets/img/certs/badges/fmv.png"
                 alt="Wall Street School badge"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                onerror="
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'flex';
+                "
               />
               <div class="cert__badge-fallback">
                 <i class="ri-funds-line"></i>
@@ -966,7 +1018,12 @@
           <!-- 5. NISM -->
           <div
             class="cert__card"
-            style="--cert-accent: #154360; --cert-accent-2: #2980b9; --cert-light: #d7e9f7; --cert-light-2: #f1f8fc"
+            style="
+              --cert-accent: #154360;
+              --cert-accent-2: #2980b9;
+              --cert-light: #d7e9f7;
+              --cert-light-2: #f1f8fc;
+            "
             onclick="openCert('nism')"
           >
             <div class="cert__header">
@@ -974,7 +1031,7 @@
                 class="cert__bg-img"
                 src="assets/img/certs/nism.jpg"
                 alt="NISM certificate"
-                onerror="this.remove();"
+                onerror="this.remove()"
               />
             </div>
             <div class="cert__badge-wrap">
@@ -982,7 +1039,10 @@
                 class="cert__badge-img"
                 src="assets/img/certs/badges/nism.png"
                 alt="NISM badge"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                onerror="
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'flex';
+                "
               />
               <div class="cert__badge-fallback">
                 <i class="ri-shield-check-line"></i>
@@ -998,7 +1058,12 @@
           <!-- 6. Data Analytics -->
           <div
             class="cert__card"
-            style="--cert-accent: #922b21; --cert-accent-2: #e74c3c; --cert-light: #fbdedb; --cert-light-2: #fdf2f1"
+            style="
+              --cert-accent: #922b21;
+              --cert-accent-2: #e74c3c;
+              --cert-light: #fbdedb;
+              --cert-light-2: #fdf2f1;
+            "
             onclick="openCert('ds')"
           >
             <div class="cert__header">
@@ -1006,7 +1071,7 @@
                 class="cert__bg-img"
                 src="assets/img/certs/ds.jpg"
                 alt="Data Analytics certificate"
-                onerror="this.remove();"
+                onerror="this.remove()"
               />
             </div>
             <div class="cert__badge-wrap">
@@ -1014,7 +1079,10 @@
                 class="cert__badge-img"
                 src="assets/img/certs/badges/ds.png"
                 alt="upGrad badge"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                onerror="
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'flex';
+                "
               />
               <div class="cert__badge-fallback">
                 <i class="ri-database-2-line"></i>
@@ -1032,7 +1100,12 @@
           <!-- 7. Synergetic Problem Solving -->
           <div
             class="cert__card"
-            style="--cert-accent: #14532d; --cert-accent-2: #27ae60; --cert-light: #d9f2e3; --cert-light-2: #f1fbf5"
+            style="
+              --cert-accent: #14532d;
+              --cert-accent-2: #27ae60;
+              --cert-light: #d9f2e3;
+              --cert-light-2: #f1fbf5;
+            "
             onclick="openCert('edi_sps')"
           >
             <div class="cert__header">
@@ -1040,7 +1113,7 @@
                 class="cert__bg-img"
                 src="assets/img/certs/edi_sps.jpg"
                 alt="Synergetic Problem Solving certificate"
-                onerror="this.remove();"
+                onerror="this.remove()"
               />
             </div>
             <div class="cert__badge-wrap">
@@ -1048,7 +1121,10 @@
                 class="cert__badge-img"
                 src="assets/img/certs/badges/edi_sps.png"
                 alt="Emirates Driving Institute badge"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                onerror="
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'flex';
+                "
               />
               <div class="cert__badge-fallback">
                 <i class="ri-group-line"></i>
@@ -1064,7 +1140,12 @@
           <!-- 8. EGA Appreciation -->
           <div
             class="cert__card"
-            style="--cert-accent: #1a1a1a; --cert-accent-2: #4a4a4a; --cert-light: #ececec; --cert-light-2: #f7f7f7"
+            style="
+              --cert-accent: #1a1a1a;
+              --cert-accent-2: #4a4a4a;
+              --cert-light: #ececec;
+              --cert-light-2: #f7f7f7;
+            "
             onclick="openCert('ega')"
           >
             <div class="cert__header">
@@ -1072,7 +1153,7 @@
                 class="cert__bg-img"
                 src="assets/img/certs/ega.jpg"
                 alt="EGA Appreciation certificate"
-                onerror="this.remove();"
+                onerror="this.remove()"
               />
             </div>
             <div class="cert__badge-wrap">
@@ -1080,7 +1161,10 @@
                 class="cert__badge-img"
                 src="assets/img/certs/badges/ega.png"
                 alt="Emirates Global Aluminium badge"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                onerror="
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'flex';
+                "
               />
               <div class="cert__badge-fallback">
                 <i class="ri-briefcase-4-line"></i>
@@ -1098,7 +1182,12 @@
           <!-- 9. Aswaaq 2014 -->
           <div
             class="cert__card"
-            style="--cert-accent: #7a1f1f; --cert-accent-2: #c0392b; --cert-light: #f8dcdc; --cert-light-2: #fdf1f0"
+            style="
+              --cert-accent: #7a1f1f;
+              --cert-accent-2: #c0392b;
+              --cert-light: #f8dcdc;
+              --cert-light-2: #fdf1f0;
+            "
             onclick="openCert('aswaaq14')"
           >
             <div class="cert__header">
@@ -1106,7 +1195,7 @@
                 class="cert__bg-img"
                 src="assets/img/certs/aswaaq14.jpg"
                 alt="Aswaaq 2014 Appreciation certificate"
-                onerror="this.remove();"
+                onerror="this.remove()"
               />
             </div>
             <div class="cert__badge-wrap">
@@ -1114,7 +1203,10 @@
                 class="cert__badge-img"
                 src="assets/img/certs/badges/aswaaq14.png"
                 alt="Aswaaq LLC badge"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                onerror="
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'flex';
+                "
               />
               <div class="cert__badge-fallback">
                 <i class="ri-award-line"></i>
@@ -1130,7 +1222,12 @@
           <!-- 10. Aswaaq 2013 -->
           <div
             class="cert__card"
-            style="--cert-accent: #8a5a12; --cert-accent-2: #ca6f1e; --cert-light: #f9e6d0; --cert-light-2: #fdf5ea"
+            style="
+              --cert-accent: #8a5a12;
+              --cert-accent-2: #ca6f1e;
+              --cert-light: #f9e6d0;
+              --cert-light-2: #fdf5ea;
+            "
             onclick="openCert('aswaaq13')"
           >
             <div class="cert__header">
@@ -1138,7 +1235,7 @@
                 class="cert__bg-img"
                 src="assets/img/certs/aswaaq13.jpg"
                 alt="Aswaaq 2013 Appreciation certificate"
-                onerror="this.remove();"
+                onerror="this.remove()"
               />
             </div>
             <div class="cert__badge-wrap">
@@ -1146,7 +1243,10 @@
                 class="cert__badge-img"
                 src="assets/img/certs/badges/aswaaq13.png"
                 alt="Aswaaq LLC badge"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                onerror="
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'flex';
+                "
               />
               <div class="cert__badge-fallback">
                 <i class="ri-award-line"></i>
@@ -1162,7 +1262,12 @@
           <!-- 11. Zayed University -->
           <div
             class="cert__card"
-            style="--cert-accent: #5a1010; --cert-accent-2: #922b21; --cert-light: #f6d9d9; --cert-light-2: #fcefef"
+            style="
+              --cert-accent: #5a1010;
+              --cert-accent-2: #922b21;
+              --cert-light: #f6d9d9;
+              --cert-light-2: #fcefef;
+            "
             onclick="openCert('zayed')"
           >
             <div class="cert__header">
@@ -1170,7 +1275,7 @@
                 class="cert__bg-img"
                 src="assets/img/certs/zayed.jpg"
                 alt="Zayed University Recognition certificate"
-                onerror="this.remove();"
+                onerror="this.remove()"
               />
             </div>
             <div class="cert__badge-wrap">
@@ -1178,7 +1283,10 @@
                 class="cert__badge-img"
                 src="assets/img/certs/badges/zayed.png"
                 alt="Zayed University badge"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                onerror="
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'flex';
+                "
               />
               <div class="cert__badge-fallback">
                 <i class="ri-shield-check-line"></i>
@@ -1196,7 +1304,12 @@
           <!-- 12. Xpert Learning 2010 -->
           <div
             class="cert__card"
-            style="--cert-accent: #0b2545; --cert-accent-2: #1c6ea4; --cert-light: #d8e8f5; --cert-light-2: #f0f7fb"
+            style="
+              --cert-accent: #0b2545;
+              --cert-accent-2: #1c6ea4;
+              --cert-light: #d8e8f5;
+              --cert-light-2: #f0f7fb;
+            "
             onclick="openCert('xpert')"
           >
             <div class="cert__header">
@@ -1204,7 +1317,7 @@
                 class="cert__bg-img"
                 src="assets/img/certs/xpert.jpg"
                 alt="Xpert Learning certificate"
-                onerror="this.remove();"
+                onerror="this.remove()"
               />
             </div>
             <div class="cert__badge-wrap">
@@ -1212,7 +1325,10 @@
                 class="cert__badge-img"
                 src="assets/img/certs/badges/xpert.png"
                 alt="Xpert Learning badge"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                onerror="
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'flex';
+                "
               />
               <div class="cert__badge-fallback">
                 <i class="ri-book-open-line"></i>
