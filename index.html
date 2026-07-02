@@ -3,29 +3,476 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!--=============== FAVICON ===============-->
     <link
       rel="shortcut icon"
       href="assets/img/favicon.png"
       type="image/x-icon"
     />
-
-    <!--=============== REMIXICONS ===============-->
     <link
       href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"
       rel="stylesheet"
     />
-
-    <!--=============== SWIPER CSS ===============-->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css"
     />
-
-    <!--=============== CSS ===============-->
     <link rel="stylesheet" href="assets/css/styles.css" />
+    <style>
+      /* ===== GLOBAL RESPONSIVE SAFETY NET ===== */
+      html {
+        overflow-x: hidden;
+      }
+      body {
+        overflow-x: hidden;
+      }
+      img {
+        max-width: 100%;
+        height: auto;
+      }
 
+      /* ===== CERTIFICATIONS SECTION ===== */
+      .certifications {
+        padding: 4rem 0 2rem;
+      }
+      .certifications__container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+      }
+      @media screen and (min-width: 768px) {
+        .certifications__container {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      @media screen and (min-width: 1200px) {
+        .certifications__container {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+      @media screen and (max-width: 340px) {
+        .certifications__container {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Card: colored header band + white body, emblem badge on the seam */
+      .cert__card {
+        position: relative;
+        border-radius: 1.1rem;
+        overflow: hidden;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        background: var(--container-color, #fff);
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+      .cert__card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+      }
+      .cert__header {
+        position: relative;
+        height: 88px;
+        flex-shrink: 0;
+        background: linear-gradient(
+          135deg,
+          var(--cert-light, #eef2ff),
+          var(--cert-light-2, #f8faff)
+        );
+        overflow: hidden;
+      }
+      .cert__bg-img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.55;
+        mix-blend-mode: multiply;
+      }
+      .cert__badge-wrap {
+        position: absolute;
+        left: 50%;
+        top: 88px;
+        transform: translate(-50%, -50%);
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+        border: 3px solid #fff;
+        z-index: 3;
+        overflow: hidden;
+      }
+      .cert__badge-img {
+        width: 74%;
+        height: 74%;
+        object-fit: contain;
+      }
+      .cert__badge-fallback {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        font-size: 1.55rem;
+        color: var(--cert-accent, #4070f4);
+      }
+      .cert__body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        padding: 2.15rem 1.1rem 1.25rem;
+      }
+      .cert__issuer {
+        font-size: 0.68rem;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: var(--cert-accent, #4070f4);
+        margin-bottom: 0.4rem;
+      }
+      .cert__name {
+        font-size: 0.92rem;
+        font-weight: 700;
+        line-height: 1.35;
+        color: var(--title-color, #1f1f1f);
+        margin-bottom: 0.6rem;
+      }
+      .cert__date {
+        font-size: 0.74rem;
+        color: var(--text-color-light, #888);
+        margin-top: auto;
+        padding-top: 0.5rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.06);
+      }
+      body.dark-theme .cert__date {
+        border-top-color: rgba(255, 255, 255, 0.08);
+      }
+      body.dark-theme .cert__card {
+        background: #1c1c2b;
+      }
+      body.dark-theme .cert__badge-wrap {
+        background: #1c1c2b;
+        border-color: #1c1c2b;
+      }
+      /* The accent colors used for issuer text / badge icons are dark
+         shades meant to sit on a white card body. In dark mode the card
+         body itself turns dark, so swap to the light tint variant of the
+         same color for contrast instead. */
+      body.dark-theme .cert__issuer {
+        color: var(--cert-light, #a9b8ff);
+      }
+      body.dark-theme .cert__badge-fallback {
+        color: var(--cert-light, #a9b8ff);
+      }
+
+      /* Modal */
+      .cert__modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.75);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+      }
+      .cert__modal-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .cert__modal {
+        background: #fff;
+        border-radius: 1rem;
+        max-width: 700px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 2rem;
+        transform: scale(0.92);
+        transition: transform 0.3s;
+      }
+      .cert__modal-overlay.active .cert__modal {
+        transform: scale(1);
+      }
+      @media screen and (max-width: 576px) {
+        .cert__modal {
+          padding: 1.25rem;
+          border-radius: 0.75rem;
+        }
+      }
+      .cert__modal-close {
+        float: right;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        line-height: 1;
+        color: #555;
+      }
+      .cert__modal img {
+        width: 100%;
+        border-radius: 0.5rem;
+        margin-top: 1rem;
+      }
+      .cert__modal h3 {
+        font-size: 1.1rem;
+        margin-top: 1rem;
+      }
+      .cert__modal p {
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: 0.3rem;
+      }
+
+      /* ===== PROJECTS — background image style ===== */
+      .projects__content {
+        position: relative;
+        border-radius: 1.5rem;
+        overflow: hidden;
+        min-height: 380px;
+        display: flex;
+        align-items: flex-end;
+      }
+      .projects__bg-img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.45);
+        transition: filter 0.4s;
+      }
+      .projects__content:hover .projects__bg-img {
+        filter: brightness(0.3);
+      }
+      .projects__overlay {
+        position: relative;
+        z-index: 1;
+        padding: 1.5rem 1.8rem 2rem;
+        color: #fff;
+        width: 100%;
+      }
+      .projects__content .projects__subtitle {
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .projects__content .projects__title {
+        color: #fff;
+        font-size: 1.25rem;
+        margin: 0.4rem 0 1rem;
+      }
+      .projects__content .projects__button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #fff;
+        padding: 0.55rem 1.1rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        backdrop-filter: blur(6px);
+        transition: background 0.25s;
+        text-decoration: none;
+      }
+      .projects__content .projects__button:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+      @media screen and (max-width: 576px) {
+        .projects__content {
+          min-height: 300px;
+        }
+        .projects__content .projects__title {
+          font-size: 1.05rem;
+        }
+      }
+
+      /* ===== EXPERIENCE TIMELINE ===== */
+      .experience {
+        padding: 4rem 0 2rem;
+      }
+      .experience__container {
+        display: grid;
+        gap: 1.5rem;
+      }
+      .experience__item {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0 1.2rem;
+        align-items: start;
+      }
+      .experience__dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--first-color, #4070f4);
+        margin-top: 0.35rem;
+        flex-shrink: 0;
+        position: relative;
+      }
+      .experience__dot::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 100%;
+        width: 2px;
+        height: calc(100% + 1.2rem);
+        transform: translateX(-50%);
+        background: rgba(64, 112, 244, 0.25);
+      }
+      .experience__item:last-child .experience__dot::after {
+        display: none;
+      }
+      .experience__role {
+        font-size: 0.98rem;
+        font-weight: 700;
+        color: var(--title-color);
+      }
+      .experience__company {
+        font-size: 0.85rem;
+        color: var(--first-color, #4070f4);
+        font-weight: 600;
+      }
+      .experience__period {
+        font-size: 0.78rem;
+        color: var(--text-color-light, #888);
+        margin: 0.1rem 0 0.5rem;
+      }
+      .experience__desc {
+        font-size: 0.83rem;
+        color: var(--text-color, #555);
+        line-height: 1.55;
+      }
+
+      /* dark mode tweaks */
+      body.dark-theme .cert__modal {
+        background: #1e1e2e;
+        color: #eee;
+      }
+      body.dark-theme .cert__modal p {
+        color: #aaa;
+      }
+      body.dark-theme .cert__modal-close {
+        color: #ccc;
+      }
+
+      /* ===== WORK EXPERIENCE SHOW MORE BUTTON ===== */
+      .qualification__toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-top: 0.75rem;
+        background: none;
+        border: none;
+        color: var(--first-color, #4070f4);
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        padding: 0;
+      }
+      .qualification__toggle:hover {
+        text-decoration: underline;
+      }
+
+      /* ===== SERVICES: CARDS CENTERED ON ALL DEVICES =====
+         Using flexbox instead of grid so the row is guaranteed to be
+         centered regardless of container width/track math. */
+      .services__container {
+        display: flex !important;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: stretch;
+        gap: 1.75rem;
+        width: 100%;
+        max-width: 760px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .services__card {
+        flex: 0 1 320px;
+        max-width: 320px;
+        box-sizing: border-box;
+        position: relative;
+        overflow: hidden;
+      }
+      @media screen and (max-width: 576px) {
+        .services__container {
+          max-width: 280px;
+        }
+        .services__card {
+          flex: 0 1 260px;
+          max-width: 260px;
+        }
+      }
+      /* Guaranteed hover accent border on the right edge of each card */
+      .services__border {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--first-color, #4070f4);
+        transform: scaleY(0);
+        transform-origin: bottom;
+        transition: transform 0.3s ease;
+      }
+      .services__card:hover .services__border {
+        transform: scaleY(1);
+      }
+
+      /* ===== SKILLS: CARDS CENTERED ON ALL DEVICES ===== */
+      .skills__container {
+        display: flex !important;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 2rem;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .skills__content {
+        flex: 1 1 340px;
+        max-width: 420px;
+        box-sizing: border-box;
+      }
+      .skills__info {
+        display: flex !important;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+      }
+      .skills__data {
+        flex: 0 1 150px;
+        max-width: 160px;
+        box-sizing: border-box;
+        text-align: center;
+      }
+      @media screen and (max-width: 576px) {
+        .skills__content {
+          flex: 0 1 100%;
+          max-width: 400px;
+        }
+        .skills__data {
+          flex: 0 1 130px;
+        }
+      }
+    </style>
     <title>
       Pravin Dusane | Project Management & Business Transformation Leader
     </title>
@@ -35,57 +482,50 @@
     <header class="header" id="header">
       <nav class="nav container">
         <a href="#" class="nav__logo"> Pravin </a>
-
         <div class="nav__menu" id="nav-menu">
           <ul class="nav__list grid">
             <li class="nav__item">
-              <a href="#home" class="nav__link active-link">
-                <i class="ri-home-5-line"></i> Home
-              </a>
+              <a href="#home" class="nav__link active-link"
+                ><i class="ri-home-5-line"></i> Home</a
+              >
             </li>
-
             <li class="nav__item">
-              <a href="#skills" class="nav__link">
-                <i class="ri-trophy-line"></i> Skills
-              </a>
+              <a href="#skills" class="nav__link"
+                ><i class="ri-trophy-line"></i> Skills</a
+              >
             </li>
-
             <li class="nav__item">
-              <a href="#qualification" class="nav__link">
-                <i class="ri-book-open-line"></i> Qualification
-              </a>
+              <a href="#qualification" class="nav__link"
+                ><i class="ri-book-open-line"></i> Experience</a
+              >
             </li>
-
             <li class="nav__item">
-              <a href="#services" class="nav__link">
-                <i class="ri-briefcase-line"></i> Services
-              </a>
+              <a href="#certifications" class="nav__link"
+                ><i class="ri-award-line"></i> Certifications</a
+              >
             </li>
-
             <li class="nav__item">
-              <a href="#projects" class="nav__link">
-                <i class="ri-image-line"></i> Projects
-              </a>
+              <a href="#services" class="nav__link"
+                ><i class="ri-briefcase-line"></i> Services</a
+              >
             </li>
-
             <li class="nav__item">
-              <a href="#contact" class="nav__link">
-                <i class="ri-chat-3-line"></i> Contact
-              </a>
+              <a href="#projects" class="nav__link"
+                ><i class="ri-image-line"></i> Projects</a
+              >
+            </li>
+            <li class="nav__item">
+              <a href="#contact" class="nav__link"
+                ><i class="ri-chat-3-line"></i> Contact</a
+              >
             </li>
           </ul>
-
-          <!-- Close button -->
           <div class="nav__close" id="nav-close">
             <i class="ri-close-line"></i>
           </div>
         </div>
-
         <div class="nav__buttons">
-          <!-- Theme change button -->
           <i class="ri-moon-line change-theme" id="theme-button"></i>
-
-          <!-- Toggle button -->
           <div class="nav__toggle" id="nav-toggle">
             <i class="ri-menu-4-line"></i>
           </div>
@@ -93,22 +533,18 @@
       </nav>
     </header>
 
-    <!--==================== MAIN ====================-->
     <main class="main">
       <!--==================== HOME ====================-->
       <section class="home section" id="home">
         <div class="home__container container grid section__border">
           <div class="home__data grid">
             <h1 class="home__title">
-              Hi, I'm Pravin <br />
-              Project Management Leader
+              Hi, I'm Pravin <br />Business Transformation Leader
             </h1>
-
             <div class="home__blob grid">
               <div class="home__perfil">
-                <img src="assets/img/pravin_img.png" alt="" />
+                <img src="assets/img/pravin_img.png" alt="Pravin Dusane" />
               </div>
-
               <img
                 src="assets/img/shape-wawes.svg"
                 alt=""
@@ -120,75 +556,62 @@
                 class="home__shape-circle"
               />
             </div>
-
             <ul class="home__social">
               <a
                 href="https://www.linkedin.com/in/pravindusane/"
                 target="_blank"
                 class="home__social-link"
-              >
-                <i class="ri-linkedin-box-line"></i>
-              </a>
-
+                ><i class="ri-linkedin-box-line"></i
+              ></a>
               <a
                 href="mailto:pravin_dusane@yahoo.co.in"
                 class="home__social-link"
-              >
-                <i class="ri-mail-line"></i>
-              </a>
+                ><i class="ri-mail-line"></i
+              ></a>
             </ul>
           </div>
 
-          <!--==================== HOME INFO 1 ====================-->
           <div class="home__info">
             <div>
               <h3 class="home__info-title">BIOGRAPHY</h3>
-
               <p class="home__info-description">
-                Senior Business Transformation Leader driving growth,
-                operations, and strategic initiatives with 20+ years of experience across India and the UAE.
+                Senior Business Transformation & AI-Enabled PMO Leader with 20+
+                years of cross-industry experience across India and the UAE,
+                specialising in strategic delivery and AI-powered process
+                optimisation.
               </p>
             </div>
-
             <div>
               <h3 class="home__info-title">CONTACT</h3>
-
               <p class="home__info-description">
                 Mumbai, India <br />
-                pravin_dusane@yahoo.co.in <br/>
+                pravin_dusane@yahoo.co.in <br />
                 +91 98675 33625
               </p>
             </div>
-
             <div>
               <h3 class="home__info-title">SERVICES</h3>
-
               <p class="home__info-description">
                 Business Consulting <br />
                 Project Management <br />
                 Financial Planning <br />
+                AI Enablement & Digital Transformation
               </p>
             </div>
           </div>
 
-          <!--==================== HOME INFO 2 ====================-->
           <div class="home__info">
             <div>
               <h3 class="home__info-title">YEARS OF EXPERIENCE</h3>
-
               <p class="home__info-number">20+</p>
             </div>
-
             <div>
               <h3 class="home__info-title">MULTI-MILLION $ PROJECTS LED</h3>
-
-              <p class="home__info-number">10+</p>
+              <p class="home__info-number">6+</p>
             </div>
-
             <div>
               <h3 class="home__info-title">COMPANIES WORKED</h3>
-
-              <p class="home__info-number">04</p>
+              <p class="home__info-number">06</p>
             </div>
           </div>
         </div>
@@ -198,128 +621,100 @@
       <section class="skills section" id="skills">
         <h2 class="section__title">Skills</h2>
         <span class="section__subtitle">Core areas of expertise</span>
-
         <div class="skills__container container grid section__border">
-          <!--==================== SKILLS 1 ====================-->
           <div class="skills__content">
             <h3 class="skills__title">
               <i class="ri-flow-chart"></i> Project & Transformation
             </h3>
-
             <div class="skills__info">
               <div class="skills__data">
                 <div class="skills__blob color-1">
                   <i class="ri-task-line"></i>
                 </div>
-
                 <h3 class="skills__name">Project Planning</h3>
                 <span class="skills__subtitle">Advanced</span>
               </div>
-
               <div class="skills__data">
                 <div class="skills__blob color-2">
                   <i class="ri-organization-chart"></i>
                 </div>
-
                 <h3 class="skills__name">Team Leadership</h3>
                 <span class="skills__subtitle">Advanced</span>
               </div>
-
               <div class="skills__data">
                 <div class="skills__blob color-3">
                   <i class="ri-refresh-line"></i>
                 </div>
-
                 <h3 class="skills__name">Business Growth</h3>
                 <span class="skills__subtitle">Advanced</span>
               </div>
-
               <div class="skills__data">
                 <div class="skills__blob color-4">
                   <i class="ri-cpu-line"></i>
                 </div>
-
-                <h3 class="skills__name">AI in Projects</h3>
+                <h3 class="skills__name">AI Enablement</h3>
                 <span class="skills__subtitle">Intermediate</span>
               </div>
-
               <div class="skills__data">
                 <div class="skills__blob color-5">
                   <i class="ri-exchange-line"></i>
                 </div>
-
                 <h3 class="skills__name">Change Management</h3>
                 <span class="skills__subtitle">Advanced</span>
               </div>
-
               <div class="skills__data">
                 <div class="skills__blob color-1">
                   <i class="ri-group-line"></i>
                 </div>
-
                 <h3 class="skills__name">Stakeholder Management</h3>
                 <span class="skills__subtitle">Advanced</span>
               </div>
             </div>
           </div>
-
-          <!--==================== SKILLS 2 ====================-->
           <div class="skills__content">
             <h3 class="skills__title">
               <i class="ri-line-chart-line"></i> Finance & Commercial
             </h3>
-
             <div class="skills__info">
               <div class="skills__data">
                 <div class="skills__blob color-6">
                   <i class="ri-bar-chart-grouped-line"></i>
                 </div>
-
-                <h3 class="skills__name">Financial Planning</h3>
+                <h3 class="skills__name">Financial Modelling</h3>
                 <span class="skills__subtitle">Advanced</span>
               </div>
-
               <div class="skills__data">
                 <div class="skills__blob color-7">
                   <i class="ri-funds-line"></i>
                 </div>
-
                 <h3 class="skills__name">Budgeting</h3>
                 <span class="skills__subtitle">Advanced</span>
               </div>
-
               <div class="skills__data">
                 <div class="skills__blob color-8">
                   <i class="ri-briefcase-4-line"></i>
                 </div>
-
                 <h3 class="skills__name">Business Operations</h3>
                 <span class="skills__subtitle">Advanced</span>
               </div>
-
               <div class="skills__data">
                 <div class="skills__blob color-9">
                   <i class="ri-discuss-line"></i>
                 </div>
-
                 <h3 class="skills__name">Negotiation</h3>
                 <span class="skills__subtitle">Advanced</span>
               </div>
-
               <div class="skills__data">
                 <div class="skills__blob color-10">
                   <i class="ri-database-2-line"></i>
                 </div>
-
-                <h3 class="skills__name">Data Analysis</h3>
+                <h3 class="skills__name">Data Analytics</h3>
                 <span class="skills__subtitle">Intermediate</span>
               </div>
-
               <div class="skills__data">
                 <div class="skills__blob color-6">
                   <i class="ri-shield-check-line"></i>
                 </div>
-
                 <h3 class="skills__name">Risk Management</h3>
                 <span class="skills__subtitle">Advanced</span>
               </div>
@@ -328,18 +723,17 @@
         </div>
       </section>
 
-      <!--==================== QUALIFICATION ====================-->
+      <!--==================== QUALIFICATION / EXPERIENCE ====================-->
       <section class="qualification section" id="qualification">
-        <h2 class="section__title">Qualification</h2>
-        <span class="section__subtitle">Experience & education</span>
+        <h2 class="section__title">Experience</h2>
+        <span class="section__subtitle">Professional journey</span>
 
         <div class="qualification__container container grid section__border">
-          <!--==================== QUALIFICATION 1 ====================-->
+          <!-- Education -->
           <div class="qualification__content">
             <h3 class="qualification__title">
-              <i class="ri-pencil-ruler-2-line"></i> Education & Certifications
+              <i class="ri-pencil-ruler-2-line"></i> Education
             </h3>
-
             <div class="qualification__info">
               <div>
                 <h3 class="qualification__name">
@@ -349,7 +743,6 @@
                   >Torrens University Australia</span
                 >
               </div>
-
               <div>
                 <h3 class="qualification__name">
                   Bachelor of Commerce (B.Com.)
@@ -358,125 +751,536 @@
                   >R.D. National College, Mumbai</span
                 >
               </div>
-
               <div>
                 <h3 class="qualification__name">
-                  PMP® | CFA Level I (Candidate) | PMI-CPMAI
+                  Post Graduate Diploma in Data Science
                 </h3>
                 <span class="qualification__country"
-                  >Project Management Institute / CFA Institute</span
-                >
-              </div>
-
-              <div>
-                <h3 class="qualification__name">
-                  Financial Modelling & Valuation
-                </h3>
-                <span class="qualification__country"
-                  >The Wall Street School</span
+                  >IIIT-Bangalore & upGrad</span
                 >
               </div>
             </div>
           </div>
 
-          <!--==================== QUALIFICATION 2 ====================-->
+          <!-- Work Experience -->
           <div class="qualification__content">
             <h3 class="qualification__title">
               <i class="ri-building-line"></i> Work Experience
             </h3>
-
-            <div class="qualification__info">
+            <div class="qualification__info" id="workExperienceList">
               <div>
                 <h3 class="qualification__name">
                   Managing Partner & Commercial Director
                 </h3>
-                <span class="qualification__country">Mahadev Buildcon</span>
-                <span class="qualification__year">Apr 2023 - Dec 2025</span>
-              </div>
-
-              <div>
-                <h3 class="qualification__name">
-                  Project Manager / Commercial Lead
-                </h3>
                 <span class="qualification__country"
-                  >Act by Track - Dubai, UAE</span
+                  >Mahadev Buildcon Pvt. Ltd.</span
                 >
-                <span class="qualification__year">May 2020 - May 2022</span>
               </div>
-
+              <div>
+                <h3 class="qualification__name">Project Manager</h3>
+                <span class="qualification__country"
+                  >Act by Track · Dubai, UAE</span
+                >
+              </div>
               <div>
                 <h3 class="qualification__name">
                   Head of Sales & Commercial Operations
                 </h3>
                 <span class="qualification__country"
-                  >Emirates Driving Institute - Dubai, UAE</span
+                  >Emirates Driving Institute · Dubai, UAE</span
                 >
-                <span class="qualification__year">Jan 2012 - Dec 2019</span>
               </div>
-
-              <div>
-                <h3 class="qualification__name">Store Manager</h3>
-                <span class="qualification__country">Rivoli Group</span>
-                <span class="qualification__year">Feb 2005 - Jan 2012</span>
+              <div class="qualification__extra" style="display: none">
+                <h3 class="qualification__name">Shop / Store Manager</h3>
+                <span class="qualification__country"
+                  >Rivoli Group · Dubai, UAE</span
+                >
+              </div>
+              <div class="qualification__extra" style="display: none">
+                <h3 class="qualification__name">Demonstration Specialist</h3>
+                <span class="qualification__country"
+                  >Bose Corporation · Mumbai</span
+                >
+              </div>
+              <div class="qualification__extra" style="display: none">
+                <h3 class="qualification__name">Customer Care Executive</h3>
+                <span class="qualification__country"
+                  >Crossword Book Stores · Mumbai</span
+                >
               </div>
             </div>
+            <button
+              class="qualification__toggle"
+              id="workExperienceToggle"
+              onclick="toggleWorkExperience()"
+            >
+              Show more <i class="ri-arrow-down-s-line"></i>
+            </button>
           </div>
         </div>
-
         <img
           src="assets/img/shape-circle.svg"
-          alt="qualification image"
+          alt=""
           class="qualification__img"
         />
       </section>
+
+      <!--==================== CERTIFICATIONS ====================-->
+      <section class="certifications section" id="certifications">
+        <h2 class="section__title">Certifications</h2>
+        <span class="section__subtitle">Credentials &amp; Recognition</span>
+
+        <div class="certifications__container container section__border">
+          <!-- 1. PMP -->
+          <div
+            class="cert__card"
+            style="--cert-accent: #1a1a6e; --cert-accent-2: #3a5bdc; --cert-light: #dde4ff; --cert-light-2: #f2f4ff"
+            onclick="openCert('pmp')"
+          >
+            <div class="cert__header">
+              <img
+                class="cert__bg-img"
+                src="assets/img/certs/pmp.jpg"
+                alt="PMP certificate"
+                onerror="this.remove();"
+              />
+            </div>
+            <div class="cert__badge-wrap">
+              <img
+                class="cert__badge-img"
+                src="assets/img/certs/badges/pmp.png"
+                alt="PMP badge"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="cert__badge-fallback">
+                <i class="ri-award-line"></i>
+              </div>
+            </div>
+            <div class="cert__body">
+              <div class="cert__issuer">Project Management Institute</div>
+              <div class="cert__name">
+                Project Management Professional (PMP®)
+              </div>
+              <div class="cert__date">Issued: Feb 2020 · ID: 2749424</div>
+            </div>
+          </div>
+
+          <!-- 2. CFA -->
+          <div
+            class="cert__card"
+            style="--cert-accent: #0a3d62; --cert-accent-2: #2e86c1; --cert-light: #d9edfb; --cert-light-2: #f0f8fd"
+            onclick="openCert('cfa')"
+          >
+            <div class="cert__header">
+              <img
+                class="cert__bg-img"
+                src="assets/img/certs/cfa.jpg"
+                alt="CFA certificate"
+                onerror="this.remove();"
+              />
+            </div>
+            <div class="cert__badge-wrap">
+              <img
+                class="cert__badge-img"
+                src="assets/img/certs/badges/cfa.png"
+                alt="CFA Institute badge"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="cert__badge-fallback">
+                <i class="ri-line-chart-line"></i>
+              </div>
+            </div>
+            <div class="cert__body">
+              <div class="cert__issuer">CFA Institute</div>
+              <div class="cert__name">CFA Level I</div>
+              <div class="cert__date">Issued: Jun 2026</div>
+            </div>
+          </div>
+
+          <!-- 3. PMI-CPMAI -->
+          <div
+            class="cert__card"
+            style="--cert-accent: #5b2c91; --cert-accent-2: #9b59b6; --cert-light: #ecdcf7; --cert-light-2: #f8f0fc"
+            onclick="openCert('cpmai')"
+          >
+            <div class="cert__header">
+              <img
+                class="cert__bg-img"
+                src="assets/img/certs/cpmai.jpg"
+                alt="CPMAI certificate"
+                onerror="this.remove();"
+              />
+            </div>
+            <div class="cert__badge-wrap">
+              <img
+                class="cert__badge-img"
+                src="assets/img/certs/badges/cpmai.png"
+                alt="PMI CPMAI badge"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="cert__badge-fallback">
+                <i class="ri-cpu-line"></i>
+              </div>
+            </div>
+            <div class="cert__body">
+              <div class="cert__issuer">PMI</div>
+              <div class="cert__name">
+                PMI Cognitive Project Management for AI (CPMAI)
+              </div>
+              <div class="cert__date">Issued: Jun 2026</div>
+            </div>
+          </div>
+
+          <!-- 4. Financial Modelling -->
+          <div
+            class="cert__card"
+            style="--cert-accent: #7d6608; --cert-accent-2: #d4ac0d; --cert-light: #faf0cf; --cert-light-2: #fffaf0"
+            onclick="openCert('fmv')"
+          >
+            <div class="cert__header">
+              <img
+                class="cert__bg-img"
+                src="assets/img/certs/fmv.jpg"
+                alt="Financial Modelling certificate"
+                onerror="this.remove();"
+              />
+            </div>
+            <div class="cert__badge-wrap">
+              <img
+                class="cert__badge-img"
+                src="assets/img/certs/badges/fmv.png"
+                alt="Wall Street School badge"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="cert__badge-fallback">
+                <i class="ri-funds-line"></i>
+              </div>
+            </div>
+            <div class="cert__body">
+              <div class="cert__issuer">The Wall Street School</div>
+              <div class="cert__name">Financial Modelling &amp; Valuation</div>
+              <div class="cert__date">Issued: Sep 2024 · ID: ZNCUPRYW</div>
+            </div>
+          </div>
+
+          <!-- 5. NISM -->
+          <div
+            class="cert__card"
+            style="--cert-accent: #154360; --cert-accent-2: #2980b9; --cert-light: #d7e9f7; --cert-light-2: #f1f8fc"
+            onclick="openCert('nism')"
+          >
+            <div class="cert__header">
+              <img
+                class="cert__bg-img"
+                src="assets/img/certs/nism.jpg"
+                alt="NISM certificate"
+                onerror="this.remove();"
+              />
+            </div>
+            <div class="cert__badge-wrap">
+              <img
+                class="cert__badge-img"
+                src="assets/img/certs/badges/nism.png"
+                alt="NISM badge"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="cert__badge-fallback">
+                <i class="ri-shield-check-line"></i>
+              </div>
+            </div>
+            <div class="cert__body">
+              <div class="cert__issuer">NISM / SEBI</div>
+              <div class="cert__name">NISM Series VIII: Equity Derivatives</div>
+              <div class="cert__date">Certified</div>
+            </div>
+          </div>
+
+          <!-- 6. Data Analytics -->
+          <div
+            class="cert__card"
+            style="--cert-accent: #922b21; --cert-accent-2: #e74c3c; --cert-light: #fbdedb; --cert-light-2: #fdf2f1"
+            onclick="openCert('ds')"
+          >
+            <div class="cert__header">
+              <img
+                class="cert__bg-img"
+                src="assets/img/certs/ds.jpg"
+                alt="Data Analytics certificate"
+                onerror="this.remove();"
+              />
+            </div>
+            <div class="cert__badge-wrap">
+              <img
+                class="cert__badge-img"
+                src="assets/img/certs/badges/ds.png"
+                alt="upGrad badge"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="cert__badge-fallback">
+                <i class="ri-database-2-line"></i>
+              </div>
+            </div>
+            <div class="cert__body">
+              <div class="cert__issuer">upGrad &amp; IIIT-Bangalore</div>
+              <div class="cert__name">
+                Data Analytics with Python (PG Diploma)
+              </div>
+              <div class="cert__date">Issued: Jul 2020</div>
+            </div>
+          </div>
+
+          <!-- 7. Synergetic Problem Solving -->
+          <div
+            class="cert__card"
+            style="--cert-accent: #14532d; --cert-accent-2: #27ae60; --cert-light: #d9f2e3; --cert-light-2: #f1fbf5"
+            onclick="openCert('edi_sps')"
+          >
+            <div class="cert__header">
+              <img
+                class="cert__bg-img"
+                src="assets/img/certs/edi_sps.jpg"
+                alt="Synergetic Problem Solving certificate"
+                onerror="this.remove();"
+              />
+            </div>
+            <div class="cert__badge-wrap">
+              <img
+                class="cert__badge-img"
+                src="assets/img/certs/badges/edi_sps.png"
+                alt="Emirates Driving Institute badge"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="cert__badge-fallback">
+                <i class="ri-group-line"></i>
+              </div>
+            </div>
+            <div class="cert__body">
+              <div class="cert__issuer">Emirates Driving Institute</div>
+              <div class="cert__name">Synergetic Problem Solving Training</div>
+              <div class="cert__date">Issued: Feb 2017</div>
+            </div>
+          </div>
+
+          <!-- 8. EGA Appreciation -->
+          <div
+            class="cert__card"
+            style="--cert-accent: #1a1a1a; --cert-accent-2: #4a4a4a; --cert-light: #ececec; --cert-light-2: #f7f7f7"
+            onclick="openCert('ega')"
+          >
+            <div class="cert__header">
+              <img
+                class="cert__bg-img"
+                src="assets/img/certs/ega.jpg"
+                alt="EGA Appreciation certificate"
+                onerror="this.remove();"
+              />
+            </div>
+            <div class="cert__badge-wrap">
+              <img
+                class="cert__badge-img"
+                src="assets/img/certs/badges/ega.png"
+                alt="Emirates Global Aluminium badge"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="cert__badge-fallback">
+                <i class="ri-briefcase-4-line"></i>
+              </div>
+            </div>
+            <div class="cert__body">
+              <div class="cert__issuer">Emirates Global Aluminium</div>
+              <div class="cert__name">
+                Certificate of Appreciation – Mobile Equipment Training
+              </div>
+              <div class="cert__date">Issued: Nov 2016</div>
+            </div>
+          </div>
+
+          <!-- 9. Aswaaq 2014 -->
+          <div
+            class="cert__card"
+            style="--cert-accent: #7a1f1f; --cert-accent-2: #c0392b; --cert-light: #f8dcdc; --cert-light-2: #fdf1f0"
+            onclick="openCert('aswaaq14')"
+          >
+            <div class="cert__header">
+              <img
+                class="cert__bg-img"
+                src="assets/img/certs/aswaaq14.jpg"
+                alt="Aswaaq 2014 Appreciation certificate"
+                onerror="this.remove();"
+              />
+            </div>
+            <div class="cert__badge-wrap">
+              <img
+                class="cert__badge-img"
+                src="assets/img/certs/badges/aswaaq14.png"
+                alt="Aswaaq LLC badge"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="cert__badge-fallback">
+                <i class="ri-award-line"></i>
+              </div>
+            </div>
+            <div class="cert__body">
+              <div class="cert__issuer">Aswaaq LLC</div>
+              <div class="cert__name">Certificate of Appreciation</div>
+              <div class="cert__date">Issued: 2014</div>
+            </div>
+          </div>
+
+          <!-- 10. Aswaaq 2013 -->
+          <div
+            class="cert__card"
+            style="--cert-accent: #8a5a12; --cert-accent-2: #ca6f1e; --cert-light: #f9e6d0; --cert-light-2: #fdf5ea"
+            onclick="openCert('aswaaq13')"
+          >
+            <div class="cert__header">
+              <img
+                class="cert__bg-img"
+                src="assets/img/certs/aswaaq13.jpg"
+                alt="Aswaaq 2013 Appreciation certificate"
+                onerror="this.remove();"
+              />
+            </div>
+            <div class="cert__badge-wrap">
+              <img
+                class="cert__badge-img"
+                src="assets/img/certs/badges/aswaaq13.png"
+                alt="Aswaaq LLC badge"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="cert__badge-fallback">
+                <i class="ri-award-line"></i>
+              </div>
+            </div>
+            <div class="cert__body">
+              <div class="cert__issuer">Aswaaq LLC</div>
+              <div class="cert__name">Certificate of Appreciation</div>
+              <div class="cert__date">Issued: 2013</div>
+            </div>
+          </div>
+
+          <!-- 11. Zayed University -->
+          <div
+            class="cert__card"
+            style="--cert-accent: #5a1010; --cert-accent-2: #922b21; --cert-light: #f6d9d9; --cert-light-2: #fcefef"
+            onclick="openCert('zayed')"
+          >
+            <div class="cert__header">
+              <img
+                class="cert__bg-img"
+                src="assets/img/certs/zayed.jpg"
+                alt="Zayed University Recognition certificate"
+                onerror="this.remove();"
+              />
+            </div>
+            <div class="cert__badge-wrap">
+              <img
+                class="cert__badge-img"
+                src="assets/img/certs/badges/zayed.png"
+                alt="Zayed University badge"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="cert__badge-fallback">
+                <i class="ri-shield-check-line"></i>
+              </div>
+            </div>
+            <div class="cert__body">
+              <div class="cert__issuer">Zayed University</div>
+              <div class="cert__name">
+                Environment Health &amp; Safety Recognition
+              </div>
+              <div class="cert__date">Certificate of Recognition</div>
+            </div>
+          </div>
+
+          <!-- 12. Xpert Learning 2010 -->
+          <div
+            class="cert__card"
+            style="--cert-accent: #0b2545; --cert-accent-2: #1c6ea4; --cert-light: #d8e8f5; --cert-light-2: #f0f7fb"
+            onclick="openCert('xpert')"
+          >
+            <div class="cert__header">
+              <img
+                class="cert__bg-img"
+                src="assets/img/certs/xpert.jpg"
+                alt="Xpert Learning certificate"
+                onerror="this.remove();"
+              />
+            </div>
+            <div class="cert__badge-wrap">
+              <img
+                class="cert__badge-img"
+                src="assets/img/certs/badges/xpert.png"
+                alt="Xpert Learning badge"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="cert__badge-fallback">
+                <i class="ri-book-open-line"></i>
+              </div>
+            </div>
+            <div class="cert__body">
+              <div class="cert__issuer">Xpert Learning / Rivoli Group</div>
+              <div class="cert__name">Professional Development Program</div>
+              <div class="cert__date">Issued: Apr 2010</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CERT MODAL -->
+      <div
+        class="cert__modal-overlay"
+        id="certModal"
+        onclick="closeCertIfBg(event)"
+      >
+        <div class="cert__modal" id="certModalInner">
+          <button class="cert__modal-close" onclick="closeCert()">
+            &#10005;
+          </button>
+          <div id="certModalContent"></div>
+        </div>
+      </div>
 
       <!--==================== SERVICES ====================-->
       <section class="services section" id="services">
         <h2 class="section__title">Services</h2>
         <span class="section__subtitle">What I offer</span>
-
         <div class="services__container container grid section__border">
           <div class="services__card">
             <i class="ri-flow-chart"></i>
-
-            <h2 class="services__title">
-              Project <br />
-              Management
-            </h2>
-
+            <h2 class="services__title">Project <br />Management</h2>
             <p class="services__description">
-              End-to-end project planning, execution, and delivery
-              with strong governance and stakeholder coordination.
+              End-to-end project planning, execution, and delivery with strong
+              governance and stakeholder coordination.
             </p>
             <div class="services__border"></div>
           </div>
-
           <div class="services__card">
             <i class="ri-bar-chart-2-line"></i>
-
-            <h2 class="services__title">
-              Financial <br />
-              Planning
-            </h2>
-
+            <h2 class="services__title">Financial <br />Planning</h2>
             <p class="services__description">
-              Budgeting, forecasting, and financial analysis to
-              support sound business decisions and growth.
+              Budgeting, forecasting, and financial modelling to support sound
+              business decisions and sustainable growth.
             </p>
             <div class="services__border"></div>
           </div>
-
+          <div class="services__card">
+            <i class="ri-robot-line"></i>
+            <h2 class="services__title">
+              AI &amp; Digital <br />Transformation
+            </h2>
+            <p class="services__description">
+              Integrating AI-powered tools, data analytics, and automation to
+              modernise operations and accelerate business transformation.
+            </p>
+            <div class="services__border"></div>
+          </div>
           <div class="services__card">
             <i class="ri-briefcase-4-line"></i>
-
-            <h2 class="services__title">
-              Business <br />
-              Consulting
-            </h2>
-
+            <h2 class="services__title">Business <br />Consulting</h2>
             <p class="services__description">
-              Strategic guidance on operations, commercial growth,
-              and partnerships to drive sustainable results.
+              Strategic guidance on operations, commercial growth, and
+              partnerships to drive sustainable results.
             </p>
             <div class="services__border"></div>
           </div>
@@ -491,86 +1295,159 @@
         <div class="container section__border">
           <div class="projects__container swiper">
             <div class="swiper-wrapper">
-              <!--==================== PROJECT 1 ====================-->
+              <!-- PROJECT 1: EDI Platinum Riding Course -->
               <div class="projects__content swiper-slide">
                 <img
                   src="assets/img/project1.jpg"
-                  alt="EDI Platinum Riding Course Launch"
-                  class="projects__img"
+                  alt="EDI Platinum Riding Course"
+                  class="projects__bg-img"
                 />
-
-                <div>
-                  <span class="projects__subtitle">Project Lead & Commercial Director</span>
-                  <h1 class="projects__title">
-                    EDI Platinum Riding Course
-                  </h1>
+                <div class="projects__overlay">
+                  <span class="projects__subtitle"
+                    >Project Lead &amp; Commercial Director</span
+                  >
+                  <h1 class="projects__title">EDI Platinum Riding Course</h1>
                   <a
                     href="https://edi-uae.com/en/platinum-riding-course"
                     target="_blank"
                     class="projects__button"
-                  >
-                    View project <i class="ri-arrow-right-line"></i>
-                  </a>
+                    >View project <i class="ri-arrow-right-line"></i
+                  ></a>
                 </div>
               </div>
 
-              <!--==================== PROJECT 2 ====================-->
+              <!-- PROJECT 2: Mobile Equipment Training – EGA -->
               <div class="projects__content swiper-slide">
                 <img
-                  src="assets/img/project_equipment.svg"
-                  alt="Mobile Equipment Training"
-                  class="projects__img"
+                  src="assets/img/mobile_equip.jpeg"
+                  alt="Mobile Equipment Training EGA"
+                  class="projects__bg-img"
                 />
-
-                <div>
-                  <span class="projects__subtitle">Jan 2012 - Present</span>
+                <div class="projects__overlay">
+                  <span class="projects__subtitle"
+                    >On-site Training Lead · EGA Dubai</span
+                  >
                   <h1 class="projects__title">
-                    Mobile Equipment Training
+                    Mobile Equipment Training – EGA
                   </h1>
                   <a
                     href="https://www.linkedin.com/in/pravindusane/"
                     target="_blank"
                     class="projects__button"
-                  >
-                    View profile <i class="ri-arrow-right-line"></i>
-                  </a>
+                    >View profile <i class="ri-arrow-right-line"></i
+                  ></a>
                 </div>
               </div>
 
-              <!--==================== PROJECT 3 ====================-->
+              <!-- PROJECT 3: Bus Driver Training – Expo 2020 -->
               <div class="projects__content swiper-slide">
                 <img
-                  src="assets/img/project_driving.svg"
-                  alt="Driver's License Training Program"
-                  class="projects__img"
+                  src="assets/img/bus_expo.jpeg"
+                  alt="Bus Driver Training Expo 2020"
+                  class="projects__bg-img"
                 />
-
-                <div>
-                  <span class="projects__subtitle">Mar 2012 - Dec 2012</span>
+                <div class="projects__overlay">
+                  <span class="projects__subtitle"
+                    >Project Manager · Dubai Expo 2020</span
+                  >
                   <h1 class="projects__title">
-                    Driver's License Training
+                    Bus Driver Training – Expo 2020
                   </h1>
                   <a
                     href="https://www.linkedin.com/in/pravindusane/"
                     target="_blank"
                     class="projects__button"
+                    >View profile <i class="ri-arrow-right-line"></i
+                  ></a>
+                </div>
+              </div>
+
+              <!-- PROJECT 4: Retail Outlet – Mall Launch -->
+              <div class="projects__content swiper-slide">
+                <img
+                  src="assets/img/retail_outlet_mall.jpeg"
+                  alt="Retail Outlet Mall Launch"
+                  class="projects__bg-img"
+                />
+                <div class="projects__overlay">
+                  <span class="projects__subtitle"
+                    >Store Manager · Rivoli Group, Dubai</span
                   >
-                    View profile <i class="ri-arrow-right-line"></i>
-                  </a>
+                  <h1 class="projects__title">
+                    Luxury Retail Outlet – Mall Launch
+                  </h1>
+                  <a
+                    href="https://www.linkedin.com/in/pravindusane/"
+                    target="_blank"
+                    class="projects__button"
+                    >View profile <i class="ri-arrow-right-line"></i
+                  ></a>
+                </div>
+              </div>
+
+              <!-- PROJECT 5: Sales Incentive Initiatives -->
+              <div class="projects__content swiper-slide">
+                <img
+                  src="assets/img/lucky_draw.jpeg"
+                  alt="Sales Incentive Lucky Draw Initiative"
+                  class="projects__bg-img"
+                  onerror="
+                    this.style.display = 'none';
+                    this.parentElement.style.background =
+                      'linear-gradient(135deg,#e67e22,#d35400,#a04000)';
+                  "
+                />
+                <div class="projects__overlay">
+                  <span class="projects__subtitle"
+                    >Sales Manager · Emirates Driving Institute</span
+                  >
+                  <h1 class="projects__title">
+                    Sales Incentive &amp; Lucky Draw Initiatives
+                  </h1>
+                  <a
+                    href="https://www.linkedin.com/in/pravindusane/"
+                    target="_blank"
+                    class="projects__button"
+                    >View profile <i class="ri-arrow-right-line"></i
+                  ></a>
+                </div>
+              </div>
+
+              <!-- PROJECT 6: Mahadev Riddhi Siddhi Complex -->
+              <div class="projects__content swiper-slide" id="proj6">
+                <img
+                  src="assets/img/complex.jpeg"
+                  alt="Mahadev Riddhi Siddhi Complex"
+                  class="projects__bg-img"
+                  onerror="
+                    this.style.display = 'none';
+                    this.parentElement.style.background =
+                      'linear-gradient(135deg,#2c3e50,#4b6584,#8395a7)';
+                  "
+                />
+                <div class="projects__overlay">
+                  <span class="projects__subtitle"
+                    >Managing Partner · Mahadev Buildcon</span
+                  >
+                  <h1 class="projects__title">
+                    Mahadev Riddhi Siddhi Complex – Kasheli, Thane
+                  </h1>
+                  <a
+                    href="https://www.linkedin.com/in/pravindusane/"
+                    target="_blank"
+                    class="projects__button"
+                    >View profile <i class="ri-arrow-right-line"></i
+                  ></a>
                 </div>
               </div>
             </div>
 
-            <!-- Swiper arrows -->
             <div class="swiper-button-next">
               <i class="ri-arrow-right-s-line"></i>
             </div>
-
             <div class="swiper-button-prev">
               <i class="ri-arrow-left-s-line"></i>
             </div>
-
-            <!-- Swiper pagination -->
             <div class="swiper-pagination"></div>
           </div>
         </div>
@@ -580,25 +1457,23 @@
       <section class="contact section" id="contact">
         <h2 class="section__title">Contact Me</h2>
         <span class="section__subtitle">Get in touch</span>
-
         <div class="contact__container container grid section__border">
           <div class="contact__content">
             <h3 class="contact__title">
               <i class="ri-chat-3-line"></i> Talk to me
             </h3>
-
             <div class="contact__info">
               <div class="contact__data">
                 <span class="contact__data-title">Email</span>
-                <span class="contact__data-info">pravin_dusane@yahoo.co.in</span>
+                <span class="contact__data-info"
+                  >pravin_dusane@yahoo.co.in</span
+                >
                 <a
                   href="mailto:pravin_dusane@yahoo.co.in"
                   class="contact__button"
-                >
-                  Send mail <i class="ri-arrow-right-line"></i>
-                </a>
+                  >Send mail <i class="ri-arrow-right-line"></i
+                ></a>
               </div>
-
               <div class="contact__data">
                 <span class="contact__data-title">LinkedIn</span>
                 <span class="contact__data-info">in/pravindusane</span>
@@ -606,23 +1481,19 @@
                   href="https://www.linkedin.com/in/pravindusane/"
                   target="_blank"
                   class="contact__button"
-                >
-                  Connect <i class="ri-arrow-right-line"></i>
-                </a>
+                  >Connect <i class="ri-arrow-right-line"></i
+                ></a>
               </div>
-
               <div class="contact__data">
                 <span class="contact__data-title">Location</span>
                 <span class="contact__data-info">Mumbai, India</span>
               </div>
             </div>
           </div>
-
           <div class="contact__content">
             <h3 class="contact__title">
               <i class="ri-send-plane-line"></i> Write me about your project
             </h3>
-
             <form action="" class="contact__form" id="contact-form">
               <div class="contact__form-div">
                 <label class="contact__form-tag">Names</label>
@@ -635,7 +1506,6 @@
                   id="contact-name"
                 />
               </div>
-
               <div class="contact__form-div">
                 <label class="contact__form-tag">Mail</label>
                 <input
@@ -647,7 +1517,6 @@
                   id="contact-email"
                 />
               </div>
-
               <div class="contact__form-div contact__form-area">
                 <label class="contact__form-tag">Project</label>
                 <textarea
@@ -657,9 +1526,7 @@
                   id="contact-project"
                 ></textarea>
               </div>
-
               <p class="contact__message" id="contact-message"></p>
-
               <button type="submit" class="contact__button">
                 Submit <i class="ri-arrow-right-up-line"></i>
               </button>
@@ -673,60 +1540,195 @@
     <footer class="footer">
       <div class="footer__container container">
         <h1 class="footer__title">Pravin Dusane</h1>
-        <p>Business Transformation & PMO Leader</p>
-
+        <p>Business Transformation &amp; PMO Leader</p>
         <ul class="footer__list">
+          <li><a href="#home" class="footer__link">Home</a></li>
+          <li><a href="#skills" class="footer__link">Skills</a></li>
           <li>
-            <a href="#home" class="footer__link">Home</a>
+            <a href="#certifications" class="footer__link">Certifications</a>
           </li>
-          <li>
-            <a href="#skills" class="footer__link">Skills</a>
-          </li>
-          <li>
-            <a href="#projects" class="footer__link">Projects</a>
-          </li>
+          <li><a href="#projects" class="footer__link">Projects</a></li>
         </ul>
-
         <ul class="footer__social">
           <a
             href="https://www.linkedin.com/in/pravindusane/"
             target="_blank"
             class="footer__social-link"
-          >
-            <i class="ri-linkedin-box-line"></i>
-          </a>
-          <a
-            href="mailto:pravin_dusane@yahoo.co.in"
-            class="footer__social-link"
-          >
-            <i class="ri-mail-line"></i>
-          </a>
+            ><i class="ri-linkedin-box-line"></i
+          ></a>
+          <a href="mailto:pravin_dusane@yahoo.co.in" class="footer__social-link"
+            ><i class="ri-mail-line"></i
+          ></a>
         </ul>
-
-        <span class="footer__copy">
-          &#169; Pravin Dusane. All rights reserved
-        </span>
+        <span class="footer__copy"
+          >&#169; Pravin Dusane. All rights reserved</span
+        >
       </div>
     </footer>
 
-    <!--========== SCROLL UP ==========-->
-    <a href="#" class="scrollup" id="scroll-up">
-      <i class="ri-arrow-up-line"></i>
-    </a>
+    <a href="#" class="scrollup" id="scroll-up"
+      ><i class="ri-arrow-up-line"></i
+    ></a>
 
-    <!--=============== SCROLLREVEAL ===============-->
     <script src="https://cdn.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js"></script>
-
-    <!--=============== SWIPER JS ===============-->
     <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
-
-    <!--=============== EMAIL JS ===============-->
     <script
       type="text/javascript"
       src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"
     ></script>
-
-    <!--=============== MAIN JS ===============-->
     <script src="assets/js/main.js"></script>
+
+    <script>
+      // ===== FORCE LIGHT THEME BY DEFAULT =====
+      // Overrides any dark-theme class main.js applied on load (e.g. from
+      // a previously saved preference or OS dark-mode setting) so the site
+      // always starts in light mode. The theme toggle button still works
+      // normally for the rest of the session.
+      document.body.classList.remove("dark-theme");
+      localStorage.removeItem("selected-theme");
+      localStorage.removeItem("selected-icon");
+      const themeButtonEl = document.getElementById("theme-button");
+      if (themeButtonEl) {
+        themeButtonEl.classList.remove("ri-sun-line");
+        themeButtonEl.classList.add("ri-moon-line");
+      }
+
+      // ===== CERTIFICATION MODAL DATA =====
+      const certData = {
+        pmp: {
+          title: "Project Management Professional (PMP®)",
+          issuer: "Project Management Institute (PMI)",
+          date: "Issued: 11 February 2020 · Expires: 11 February 2029",
+          id: "Certification No: 2749424",
+          note: "Global professional certification in project management.",
+          imgSrc: "assets/img/certs/pmp.jpg",
+        },
+        cfa: {
+          title: "CFA Level I",
+          issuer: "CFA Institute",
+          date: "Issued: June 2026",
+          id: "",
+          note: "Globally recognised Chartered Financial Analyst designation.",
+          imgSrc: "assets/img/certs/cfa.jpg",
+        },
+        cpmai: {
+          title: "PMI Cognitive Project Management for AI (PMI-CPMAI)",
+          issuer: "Project Management Institute",
+          date: "Issued: June 2026",
+          id: "",
+          note: "Specialisation in AI-augmented project management methodologies.",
+          imgSrc: "assets/img/certs/cpmai.jpg",
+        },
+        fmv: {
+          title: "Financial Modelling & Valuation Program",
+          issuer: "The Wall Street School, New Delhi",
+          date: "24th September 2024",
+          id: "Credential ID: ZNCUPRYW",
+          note: "Covers advanced financial modelling, DCF, and equity valuation techniques.",
+          imgSrc: "assets/img/certs/fmv.jpg",
+        },
+        nism: {
+          title: "NISM Series VIII: Equity Derivatives",
+          issuer: "NISM / SEBI",
+          date: "Certified",
+          id: "",
+          note: "SEBI-mandated certification for equity derivatives market participants.",
+          imgSrc: "assets/img/certs/nism.jpg",
+        },
+        ds: {
+          title: "Post Graduate Diploma in Data Science",
+          issuer: "upGrad & IIIT-Bangalore",
+          date: "May 2020 – July 2020",
+          id: "",
+          note: "Modules: Data Toolkit, Python for Data Science, Data Visualisation, IMDb Assignment.",
+          imgSrc: "assets/img/certs/ds.jpg",
+        },
+        edi_sps: {
+          title: "Synergetic Problem Solving Training",
+          issuer: "Emirates Driving Institute",
+          date: "23 February 2017",
+          id: "",
+          note: "Certificate of Attendance for professional problem-solving workshop.",
+          imgSrc: "assets/img/certs/edi_sps.jpg",
+        },
+        ega: {
+          title: "Certificate of Appreciation",
+          issuer: "Emirates Global Aluminium (EGA)",
+          date: "06 November 2016",
+          id: "Signed by: Mohammad Amin Fikree, Manager O&T Training",
+          note: "Outstanding support of Mobile Equipment Training at Dubai Aluminium PJSC.",
+          imgSrc: "assets/img/certs/ega.jpg",
+        },
+        aswaaq14: {
+          title: "Certificate of Appreciation – aswaaq 2014",
+          issuer: "aswaaq LLC",
+          date: "2014",
+          id: "Signed by: Yousuf Sharaf, CEO",
+          note: "Outstanding contribution to aswaaq's success for 2014.",
+          imgSrc: "assets/img/certs/aswaaq14.jpg",
+        },
+        aswaaq13: {
+          title: "Certificate of Appreciation – aswaaq 2013",
+          issuer: "aswaaq LLC",
+          date: "2013",
+          id: "Signed by: Deputy CEO",
+          note: "Continuous support towards improving Industry Standards through trainings at aswaaq LLC.",
+          imgSrc: "assets/img/certs/aswaaq13.jpg",
+        },
+        zayed: {
+          title: "Certificate of Recognition",
+          issuer: "Zayed University",
+          date: "Recognition",
+          id: "Signed by: Prof. Reyadh AlMehaideb, VP Zayed University",
+          note: "Active support and participation in the Environment Health & Safety Interactive Campaign.",
+          imgSrc: "assets/img/certs/zayed.jpg",
+        },
+        xpert: {
+          title: "Professional Development Program",
+          issuer: "Xpert Learning / Rivoli Group",
+          date: "April 2010",
+          id: "Skillsoft Certified",
+          note: "Courses: Sales Communication, Customer Conflict, Service Teams, Listening Skills, Positive Attitude.",
+          imgSrc: "assets/img/certs/xpert.jpg",
+        },
+      };
+
+      function openCert(key) {
+        const d = certData[key];
+        if (!d) return;
+        const content = document.getElementById("certModalContent");
+        content.innerHTML = `
+          <h3 style="font-size:1.15rem;font-weight:700;margin-bottom:.3rem;">${d.title}</h3>
+          <p style="color:#4070f4;font-weight:600;margin-bottom:.2rem;">${d.issuer}</p>
+          <p style="font-size:.82rem;color:#888;margin-bottom:.5rem;">${d.date}${d.id ? " &nbsp;|&nbsp; " + d.id : ""}</p>
+          <p style="font-size:.9rem;margin-bottom:.8rem;">${d.note}</p>
+          ${d.imgSrc ? `<img src="${d.imgSrc}" alt="${d.title}" onerror="this.style.display='none'" />` : ""}
+        `;
+        document.getElementById("certModal").classList.add("active");
+      }
+      function closeCert() {
+        document.getElementById("certModal").classList.remove("active");
+      }
+      function closeCertIfBg(e) {
+        if (e.target.id === "certModal") closeCert();
+      }
+
+      // ===== WORK EXPERIENCE SHOW MORE / SHOW LESS =====
+      function toggleWorkExperience() {
+        const list = document.getElementById("workExperienceList");
+        const btn = document.getElementById("workExperienceToggle");
+        const extras = list.querySelectorAll(".qualification__extra");
+        const expanded = btn.getAttribute("data-expanded") === "true";
+
+        extras.forEach((el) => {
+          el.style.display = expanded ? "none" : "block";
+        });
+
+        btn.setAttribute("data-expanded", String(!expanded));
+        btn.innerHTML = expanded
+          ? 'Show more <i class="ri-arrow-down-s-line"></i>'
+          : 'Show less <i class="ri-arrow-up-s-line"></i>';
+      }
+    </script>
   </body>
 </html>
